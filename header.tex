@@ -1,0 +1,118 @@
+\documentclass[12pt,oneside]{fithesis2}
+\usepackage[english]{babel}       % Multilingual support
+\usepackage[utf8]{inputenc}       % UTF-8 encoding
+\usepackage[T1]{fontenc}          % T1 font encoding
+\usepackage[                      % A sans serif font that blends well with Palatino
+  scaled=0.86
+]{berasans}
+\usepackage[                      % A tt font if you do not like LM's tt
+  scaled=1.03
+]{inconsolata}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage[                      % Clickable links
+  plainpages = false,             % We have multiple page numberings
+  pdfpagelabels                   % Generate pdf page labels
+]{hyperref}
+
+\hypersetup{
+	pdftitle={Efficient exhaustive generation of small multiway cuts},
+	pdfauthor={Ondřej Slámečka},
+	colorlinks=true,     % uses boxes if set to false
+	linkcolor=BrickRed,  % color of internal links
+	citecolor=BrickRed,  % color of links to bibliography
+	filecolor=BrickRed,  % color of file links
+	urlcolor=BrickRed    % color of external links
+}
+
+\usepackage[backend=biber, sorting=none]{biblatex}
+\addbibresource{thesis.bib}
+%\usepackage{showframe}
+
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{relsize} % mathlarger
+\usepackage{amsthm}
+\usepackage{algorithm, algpseudocode}
+\usepackage{complexity} % #P
+
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\algnewcommand{\algorithmicendif}{\textbf{fi}}
+\algblockdefx[IF]{If}{EndIf}[1]{\algorithmicif\ #1\ \algorithmicthen}{\algorithmicendif}
+
+\makeatletter
+\renewcommand\thealgorithm{\thechapter.\arabic{algorithm}}
+\@addtoreset{algorithm}{chapter}
+\makeatother
+
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\small}
+
+\DeclareMathOperator{\mtime}{time}
+\DeclareMathOperator{\mbonds}{bonds}
+\DeclareMathOperator{\mlen}{len}
+\DeclareMathOperator{\mcan}{can}
+
+% amsthm
+\theoremstyle{plain}% default
+\newtheorem{thm}[algorithm]{Theorem}
+\newtheorem{lem}[algorithm]{Lemma}
+\newtheorem{prop}[algorithm]{Proposition}
+\newtheorem{cor}[algorithm]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{defn}[algorithm]{Definition}
+\newtheorem{claim}[algorithm]{Claim}
+\newtheorem{exmp}[algorithm]{Example}
+
+\theoremstyle{remark}
+\newtheorem*{rec}{Recall}
+\newtheorem*{rem}{Remark}
+\newtheorem*{note}{Note}
+
+% tables
+\usepackage{longtable}%
+\usepackage{colortbl}%
+\newcommand{\evenrowcolor}{\rowcolor[gray]{0.925}}
+
+\usepackage{booktabs}
+%\usepackage{slashbox}
+
+% gnuplottex
+\usepackage{gnuplottex}
+
+% section line
+\newcommand{\sectionline}{%
+	\nointerlineskip \vspace{0.2cm}%
+	\begin{center}
+		\rule{0.5\linewidth}{.7pt}
+	\end{center}
+	\par\nointerlineskip \vspace{0.2cm} % \baselineskip
+}
+
+
+% http://tex.stackexchange.com/questions/89745/how-to-diagonally-divide-a-table-cell-properly
+\usepackage{array}
+\usepackage{makecell}
+\newcolumntype{x}[1]{>{\centering\arraybackslash}p{#1}}
+\usepackage{tikz}
+\newcommand\diag[4]{%
+  \multicolumn{1}{p{#2}|}{\hskip-\tabcolsep
+  $\vcenter{\begin{tikzpicture}[baseline=0,anchor=south west,inner sep=#1]
+  \path[use as bounding box] (0,0) rectangle (#2+2\tabcolsep,\baselineskip);
+  \node[minimum width={#2+2\tabcolsep-\pgflinewidth},
+        minimum  height=\baselineskip+\extrarowheight-\pgflinewidth] (box) {};
+  \draw[line cap=round] (box.north west) -- (box.south east);
+  \node[anchor=south west] at (box.south west) {#3};
+  \node[anchor=north east] at (box.north east) {#4};
+ \end{tikzpicture}}$\hskip-\tabcolsep}}
+
+% table and figures should share counters
+\makeatletter
+\renewcommand*{\thetable}{\arabic{chapter}.\arabic{table}}
+\renewcommand*{\thefigure}{\arabic{chapter}.\arabic{figure}}
+\let\c@table\c@figure
+\makeatother 
+

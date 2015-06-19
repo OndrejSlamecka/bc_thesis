@@ -1,0 +1,21 @@
+# Running mincuts: 2-bonds with at max 1 edges
+2 1 0.27 457
+# Running mincuts: 2-bonds with at max 2 edges
+2 2 1.04 1168
+# Running mincuts: 2-bonds with at max 3 edges
+2 3 5.70 9252
+# Running mincuts: 2-bonds with at max 4 edges
+2 4 24.66 28316
+# Running mincuts: 2-bonds with at max 5 edges
+2 5 108.77 85056
+# Running mincuts: 2-bonds with at max 6 edges
+2 6 593.44 279872
+# Running mincuts: 3-bonds with at max 2 edges
+3 2 100.53 208392
+# Running mincuts: 3-bonds with at max 3 edges
+3 3 589.74 857670
+# Running mincuts: 3-bonds with at max 4 edges
+3 4 4729.94 8754572
+# Running mincuts: 3-bonds with at max 5 edges
+3 5 23646.26 37731989
+

@@ -1,0 +1,53 @@
+\input{header}
+
+%% thesis
+
+\thesislang{en}                   % The language of the thesis
+% The title of the thesis
+\thesistitle{Efficient exhaustive generation of small multiway cuts}
+\thesissubtitle{Bachelor Thesis}  % The type of the thesis
+\thesisstudent{Ondřej Slámečka}   % Your name
+\thesiswoman{false}               % Your gender
+\thesisfaculty{fi}                % Your faculty
+\thesisyear{Spring \the\year}     % The academic term of your thesis defense
+\thesisadvisor{prof. RNDr. Petr Hliněný, Ph.D.}   % Your advisor
+
+\begin{document}
+  \FrontMatter                    % The front matter
+    \ThesisTitlePage                % The title page
+    \begin{ThesisDeclaration}       % The declaration
+      \DeclarationText
+      \AdvisorName
+    \end{ThesisDeclaration}
+    \begin{ThesisThanks}            % The acknowledgements (optional)
+      I would like to thank my supervisor prof. RNDr. Petr Hliněný, Ph.D. who suggested this interesting topic to me and guided me throughout my work.
+
+
+    \end{ThesisThanks}
+    \begin{ThesisAbstract}          % The abstract
+
+Given a large but sparse graph the problem is to generate all minimal multiway edge-cuts up to a certain number of edges. We present a detailed description of a newly proposed "circuit-cocircuit" algorithm and its modification for almost canonical generation of cuts, based on the technique of generation by canonical construction path. We provide an implementation of the algorithm in a computer program and evaluate its various features to demonstrate practical feasibility of the algorithm. In the evaluation a special attention is paid to real-world road networks.
+
+	\end{ThesisAbstract}
+    \begin{ThesisKeyWords}          % The keywords
+      graph theory, matroid theory, graph cuts, graph algorithms, algorithm implementation
+    \end{ThesisKeyWords}
+    \tableofcontents                % The table of contents
+%   \listoftables                   % The list of tables (optional)
+%   \listoffigures                  % The list of figures (optional)
+
+\MainMatter                     % The main matter
+
+\include{ch_introduction}
+\include{ch_definitions}
+\include{ch_algorithm}
+\include{ch_implementation}
+\include{ch_evaluation}
+\include{ch_conclusion}
+
+	% Bibliography goes here
+
+\printbibliography
+
+    % Index goes here (optional)
+\end{document}

@@ -1,0 +1,11 @@
+# Running mincuts: 3-bonds with at max 3 edges
+3 3 312261 312196
+# Running mincuts: 3-bonds with at max 4 edges
+3 4 2225151 2223890
+# Running mincuts: 3-bonds with at max 5 edges
+3 5 7204670 7193157
+# Running mincuts: 3-bonds with at max 6 edges
+3 6 25765132 25708490
+# Running mincuts: 4-bonds with at max 4 edges
+4 4 63271677 63241954
+

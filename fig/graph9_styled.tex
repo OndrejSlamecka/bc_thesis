@@ -1,0 +1,49 @@
+\pagestyle{empty}
+%
+%
+%
+
+\enlargethispage{100cm}
+% Start of code
+\begin{tikzpicture}[>=latex',line join=bevel, real/.append style={circle, draw=black}  ]
+  \pgfsetlinewidth{1bp}
+%%
+
+  % Node: 1
+\begin{scope}
+  \definecolor{strokecol}{rgb}{0.0,0.0,0.0};
+  \pgfsetstrokecolor{strokecol}
+  \draw (46.663bp,27.303bp) node[real] {1};
+\end{scope}
+  % Node: 0
+\begin{scope}
+  \definecolor{strokecol}{rgb}{0.0,0.0,0.0};
+  \pgfsetstrokecolor{strokecol}
+  \draw (-47.07bp,26.657bp) node[real] {0};
+\end{scope}
+  % Node: 2
+\begin{scope}
+  \definecolor{strokecol}{rgb}{0.0,0.0,0.0};
+  \pgfsetstrokecolor{strokecol}
+  \draw (0.40688bp,-53.96bp) node[real] {2};
+\end{scope}
+
+
+
+\pgfsetcolor{black}
+  % Edge: 0 -- 1
+  \draw [] (-30.312bp,26.773bp) .. controls (-13.251bp,26.89bp) and (13.042bp,27.071bp)  .. (30.051bp,27.188bp);
+  \definecolor{strokecol}{rgb}{0.0,0.0,0.0};
+  \pgfsetstrokecolor{strokecol}
+  \draw (0,35bp) node {0};
+  % Edge: 2 -- 0
+  \draw [] (-8.081bp,-39.547bp) .. controls (-16.723bp,-24.873bp) and (-30.041bp,-2.2595bp)  .. (-38.656bp,12.369bp);
+  \draw (-35bp,-12bp) node {2};
+  % Edge: 1 -- 2
+  \draw [] (38.393bp,12.775bp) .. controls (29.974bp,-2.0167bp) and (16.999bp,-24.812bp)  .. (8.605bp,-39.558bp);
+  \draw (35.3bp,-11bp) node {1};
+%
+\end{tikzpicture}
+% End of code
+
+

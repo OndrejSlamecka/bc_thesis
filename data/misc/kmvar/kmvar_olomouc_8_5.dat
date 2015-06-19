@@ -1,0 +1,40 @@
+# Running mincuts: 2-bonds with at max 1 edges (So kvě  9 18:31:03 CEST 2015)
+2 1 0.02 202
+# Running mincuts: 2-bonds with at max 2 edges (So kvě  9 18:31:03 CEST 2015)
+2 2 0.07 434
+# Running mincuts: 2-bonds with at max 3 edges
+2 3 0.30 1987
+# Running mincuts: 2-bonds with at max 4 edges
+2 4 1.28 5323
+# Running mincuts: 2-bonds with at max 5 edges
+2 5 5.15 14983
+# Running mincuts: 2-bonds with at max 6 edges
+2 6 16.16 46187
+# Running mincuts: 2-bonds with at max 7 edges
+2 7 69.75 146996
+# Running mincuts: 2-bonds with at max 8 edges
+2 8 305.47 481842
+# Running mincuts: 3-bonds with at max 2 edges
+3 2 3.00 20301
+# Running mincuts: 3-bonds with at max 3 edges
+3 3 10.38 67375
+# Running mincuts: 3-bonds with at max 4 edges
+3 4 60.88 409149
+# Running mincuts: 3-bonds with at max 5 edges
+3 5 235.40 1456411
+# Running mincuts: 3-bonds with at max 6 edges
+3 6 921.45 5453533
+# Running mincuts: 3-bonds with at max 7 edges
+3 7 3482.62 19481692
+# Running mincuts: 3-bonds with at max 8 edges
+3 8 13342.02 68719133
+# Running mincuts: 4-bonds with at max 3 edges
+4 3 158.29 1353400
+# Running mincuts: 4-bonds with at max 4 edges
+4 4 781.43 6105919
+# Running mincuts: 4-bonds with at max 5 edges
+4 5 6008.40 43351000
+# Running mincuts: 5-bonds with at max 4 edges
+5 4 6205.22 67331650
+# Running mincuts: 5-bonds with at max 5 edges
+5 5 43242.26 385637842

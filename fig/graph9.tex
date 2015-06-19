@@ -1,0 +1,40 @@
+% 
+% dot2tex --autosize tmp/graph9.tmp --prog neato --figonly
+%
+
+\begin{tikzpicture}[>=latex,line join=bevel,real/.append style={circle, draw=black} ]
+  \pgfsetlinewidth{1bp}
+%%
+\pgfsetcolor{black}
+  % Edge: 0 -- 1
+  \draw [] (-35.2bp,26.724bp) .. controls (-15.446bp,26.841bp) and (15.392bp,27.043bp)  .. (35.2bp,27.159bp);
+  \definecolor{strokecol}{rgb}{0.0,0.0,0.0};
+  \pgfsetstrokecolor{strokecol}
+  \draw (0bp,35.941bp) node {0};
+  % Edge: 2 -- 0
+  \draw [] (-5.2199bp,-44.329bp) .. controls (-14.277bp,-29bp) and (-31.973bp,0.95243bp)  .. (-41.211bp,16.588bp);
+  \draw (-32.1bp,-12.8705bp) node {2};
+  % Edge: 1 -- 2
+  \draw [] (41.229bp,17.623bp) .. controls (32.319bp,2.0092bp) and (14.815bp,-28.662bp)  .. (5.9095bp,-44.269bp);
+  \draw (32.8bp,-12bp) node {1};
+  % Node: 1
+\begin{scope}
+  \definecolor{strokecol}{rgb}{0.0,0.0,0.0};
+  \pgfsetstrokecolor{strokecol}
+  \draw (46.722bp,27.249bp) node [real] {1};
+\end{scope}
+  % Node: 0
+\begin{scope}
+  \definecolor{strokecol}{rgb}{0.0,0.0,0.0};
+  \pgfsetstrokecolor{strokecol}
+  \draw (-47.146bp,26.633bp) node [real] {0};
+\end{scope}
+  % Node: 2
+\begin{scope}
+  \definecolor{strokecol}{rgb}{0.0,0.0,0.0};
+  \pgfsetstrokecolor{strokecol}
+  \draw (0.42374bp,-53.881bp) node [real] {2};
+\end{scope}
+%
+\end{tikzpicture}
+

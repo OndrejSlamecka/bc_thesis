@@ -1,0 +1,167 @@
+\chapter{Practical implementation}
+\label{ch:practical_impl}
+
+The source code of our implementation is stored in a git repository on GitHub\footnote{\url{www.github.com}} available online at \url{https://github.com/OndrejSlamecka/mincuts}. This repository also contains tools related to working with the output of the main program called \lstinline|mincuts| and measuring of various parameters further described in Chapter 6. Short documentation can be found in \lstinline|readme.md|. The source code is available under MIT license \footnote{\url{http://opensource.org/licenses/MIT}} enclosed within the repository.
+
+\section{Choice of tools}
+
+To implement the algorithm we are using the C++ programming language, which is a popular language with very fast execution of the resulting programs (on general computing problems). We are using the C++11 standard and the source code was successfully compiled with \lstinline|gcc| version 4.8.2.
+
+To avoid reinventing the wheel with basic data structures (e.g. graph, disjoint sets) we are using a small part of OGDF -- Open Graph Drawing Framework. This small part has no graph drawing related burden and thus does not interfere with our goal. Also this dependency could be easily replaced by own implementation.
+
+\section{Choice of $\lambda$}
+\label{sec:choice_of_lambda}
+
+Recall $\lambda$ is an arbitrary map $E(G) \rightarrow \mathbb{N}$ used in the algorithm to select the unique canonical path between some vertex of $V(T_r)$ and some of $V_b$. We will also describe the use of this map in self-testing procedures. The choice of $\lambda$ is done before starting the circuit-\linebreak{}cocircuit algorithm.
+
+In an ideal setting $\lambda$ would be chosen such that $\lambda(e) := 2^{\iota(e)}$. With this choice no two paths $P_1, P_2 \subseteq G$ could have $\mlen_{\lambda}(P_1) = \mlen_{\lambda}(P_2)$. But this choice is not feasible for any but small graphs due to the limits on the size of integer variables.
+
+Instead we implemented a trivial approach which yields practically goods results (measured in Chapter \ref{chapter_evaluation}). For each $e \in E(G)$ we set $\lambda(e) := r_e$, where $r_e$ is a number chosen from the range $[0, \, { {m}\over{|V| - k + 1} } )$ with uniform probability. Here $m$ stands for the highest value a variable of type \lstinline|uint64_t| \footnote{\lstinline|uint64_t| is defined in header file \lstinline|cstdint|} can hold and $k$ is the input parameter of the algorithm specifying the multiplicity of the cuts (it is the $k$ in $k$-bonds).
+
+The upper bound on $r_e$ is chosen as such because a type-C circuit is of length at most $\lvert V \rvert - k + 2$ -- we have to avoid exceeding the maximum value of an \lstinline|uint64_t| variable when computing $\mlen_\lambda$.
+
+Our implementation uses various tools from the C++11 standard library: random engine \lstinline|default_random_engine|, random number distribution \lstinline|uniform_int_distribution| and \lstinline|random_device| to seed the \linebreak random engine.
+
+
+\section{Choice of forest in \lstinline|ExtendBond|}
+
+Let $G$ be a graph, $k$ the given multiplicity of the resulting cuts and $Y$ a $j$-bond such that $j < k$. In our implementation we are using Kruskal's algorithm to find the $\iota$-minimum spanning forest $F \subseteq G$ with the following modifications:
+
+\begin{itemize}
+	\item we avoid adding edges of $Y$ to $F$ (confer Claim \ref{forest_sel_claim})
+	\item we stop generating $F$ when $\lvert E(F) \rvert = |V(G)| - (k - 1)$, because this is the number of edges a forest of $k - 1$ trees has
+\end{itemize}
+
+With the canonical generation the algorithm does not start generation from those edges $e$ of $F$ which satisfy $\iota(e) \leq \tau(Y)$ (confer Definition \ref{def:tau}). Such comparison is possible by maintaining a variable we call \lstinline|lastBondFirstEdge| together with the variable $X$ (confer Algorithm \ref{alg:final}). In this variable we are storing the edge $c_{s(j)+1}$, where $j$ is the largest index such that $c_{s(j)+1}$ has been added to $X$. From its definition the variable is updated at the beginning of each stage.
+
+\section{Graph colouring}
+\label{sec:colouring}
+
+To hold the colouring of vertices and edges in the memory we use a single map \textit{colouring} : (\textit{Vertex} or \textit{Edge}) $\rightarrow \{$\textit{red}, \textit{blue}, \textit{black}$\}$, where \textit{black} serves no special purpose but marking that an edge hasn't been coloured red or blue.
+
+Object \lstinline|colouring|, an instance of class $GraphColouring$ defined in the C++ code to represent the \textit{colouring} from above, stores the colouring internaly as maps from \textit{node} and \textit{edge} types to enumerated type \textit{Colour}. The class also maintains a list of all red vertices and a counter of blue vertices to achieve faster access to this information.
+
+For vertices the class offers \lstinline|set(vertex, colour)| as a setter and an overloaded array access operator as a getter. For edges overloaded array operator is used for both changing and reading the information about edge colour. An example of changing the colour of edge $e$~would be \lstinline|colouring[e] = Colour::BLUE|.
+
+When implementing the colouring it was necessary to allow for
+
+\begin{enumerate}
+	\item fast computation of the unique shortest $V(T_r){-}V_b$ path,
+	\item quickly answering whether $G \setminus X$ contains a hyperplane.
+\end{enumerate}
+
+Before we continue to specific implementation details of those two tasks let us note:
+
+\begin{itemize}
+	\item it will turn out that in $T_b$ we do not need to recognize, and thus do not need to colour, other vertices as blue than those in $V_b$
+
+	\item when adding each edge $c$ from the path (between $V(T_r)$ and $V_b$) to $X$ we would have to colour blue the part of the path from $c$ to the blue tree. To avoid repetition we instead colour the whole path blue right after finding the path
+\end{itemize}
+
+
+\section{Graph colouring memory management}
+
+When considering the level $i$ of recursion of the algorithm within the $j$-th stage, one notices that the colouring of the graph on levels~${>i}$ must not affect the colouring on the level $i$. A simple solution to this problem would be to copy the whole part of memory containing the colouring when entering a new level of recursion. However such copying greatly reduces the speed of the program. For example when computing $4$-bonds with up to four edges of the road network of the Zlín Region, the original program computes the bonds faster than a modified one (with copying of the colouring) by 26\%.
+
+So in order to improve the efficiency of our implementation we want to avoid copying of the object containing the colouring as much as possible. The program does this by passing \lstinline|colouring| by reference, recording every step of colouring done on the level $i + 1$ of recursion and at the end of this level reverting the steps to leave the colouring as it was before entering it. Note that with each \lstinline|ExtendBond| call we need to start the whole colouring again so here we actually create a new object of class \lstinline|GraphColouring|.
+
+In each call of \lstinline|GenStage| after successfully finding the path $P$ we start by colouring the path blue. Before doing so we have to record which edges of the path are blue (to correctly restore the state of colouring later). In the case of disconnecting the blue subgraph $G_b$ we also need to record the edges of this old, disconnected graph and then record the edges of the new blue tree.
+
+At the end of \lstinline|GenStage| execution (all the edges of $P$ were considered or there is no hyperplane) we call the \lstinline|revertColouring| procedure to set the colouring back to the state in which it was before entering this \lstinline|GenStage|. First, $G_b$ disconnection occurred, then we colour black the edges of the newly created blue tree and the edges of the old blue tree (recoloured black in this stage) are coloured blue. Then we colour both edges and vertices of the path black. We might have coloured black some blue vertex of $X$ during the stage so we colour all non-red vertices of $X$ blue (note that we could not have lost a red vertex). Then we colour blue all the edges which are in the path but were blue before this stage.
+
+\clearpage
+
+\section{Finding the (unique) shortest path}
+
+In this section we give details about implementing the \lstinline|shortestPath| procedure. Let $G, Y, X, T_r, V_b$ be as in Algorithm \ref{alg:final}.
+
+First, we look into the situation of Algorithm \ref{algorithm-one_stage}, that is without canonical generation. The search procedure has to find a $V(T_r){-}V_b$ path. Since our implementation actually colours blue only vertices in $V_b$ we can translate the problem to finding the shortest path between some red vertex and some blue vertex. To solve this problem we are using a slight modification of the breadth-first search algorithm. In this modification the algorithm starts the search not from a single vertex but from all red vertices\footnote{Thus it does not necessarilly generate a BFS tree, it is a BFS forest} and then continues searching through $G \setminus (X \cup Y \cup E(T_r))$ until a blue vertex is found. The algorithm then returns the found path.
+
+Note that this modifiaction of BFS creates a BFS forest rather than a BFS tree. By the distance of a vertex $n$ we mean the distance of the shortest path from $n$ to some of the starting vertices.
+
+Now we investigate the choice of the unique shortest path. Recall that the unique shortest path is the path $P$ which lexicographically minimizes $(\lvert P \rvert, len_\lambda(P), (\iota(e_1), ...,\iota(e_{\lvert P \rvert}))$. The algorithm chooses $\lambda$ \linebreak during initialization, see Section \ref{sec:choice_of_lambda}.
+
+For each vertex $v$ we define the \textit{$\lambda$ distance}, denoted $d_\lambda(v)$, such that $d_\lambda(v) = \mlen_\lambda(Q)$, where $Q$ is the shortest path\footnote{Without this restriction we would need for example Dijkstra's algorithm} from some of the starting vertices. $d_\lambda(s) = 0$ for each starting vertex $s$.
+
+We further modify the BFS-like algorithm from above to compute the $\lambda$ distance. The algorithm recognizes two cases; say it has encountered a vertex $v$:
+
+\begin{itemize}
+	\item if $v$ was just discovered from $u$ through edge $e$ -- then the algorithm sets $d_\lambda(v) := d_\lambda(u) + \lambda(e)$,
+
+	\item if $v$ was discovered previously from $u$, but now the algorithm explores an edge $f = \{u', v\}$, such that $u'$ is in the same distance as $u$ -- then the algorithm sets $d_\lambda(v) := d_\lambda(u') + \lambda(f)$ and updates the BFS forest (to mark $u'$ to be the predecessor of $v$) only if $d_\lambda(v)$ would decrease.
+
+\end{itemize}
+
+Since the algorithm updates $d_\lambda$ only in vertices at the maximum currently discovered distance and since it is a modification of BFS\footnote{Vertices are discovered in the order determined by their distance from the start}, one can use an easy induction on the maximum discovered distance to prove the correctness of computing $d_\lambda$.
+
+	It is important that we cannot end the search right away when some blue vertex $n$ is discovered. The algorithm has to empty the queue it uses (without further exploration of more distant vertices) since there may be a blue vertex $m$ in the same distance as $n$. This finishes minimizing $(\lvert P \rvert, \mlen_\lambda(P))$.
+
+	However there may still be two paths $P_1$ and $P_2$ which are equal when comparing $(\lvert P_1 \rvert, \mlen_\lambda(P_1))$ and $(\lvert P_2 \rvert, \mlen_\lambda(P_2))$. We choose the one which minimizes $\vec{\iota}(P) = (\iota(e_1), \iota(e_2),\ldots, \iota(e_{\lvert P \rvert}))$ with an easy comparison. This finishes the canonical choice of the unique shortest path $P$ between some vertex of $V(T_r)$ and some vertex of $V_b$.
+
+\section{Hyperplane detection}
+
+We will give details on implementing the heuristic which was used in Chapter \ref{ch:canonical}. Let $G, X, G_b$ be as in Algorithm \ref{alg:final}.
+
+\subsection*{Testing possible disconnection of $G_b$}
+
+To answer the question whether adding a new edge $c = \{u,v\}$ to $X$ causes a disconnection of $G_b$ we would generally need graph traversal algorithms again. If $G_b$ was a tree and we did not colour the shortest path blue right after finding it (confer Section \ref{sec:colouring}) then the question is equivalent to $c$ being blue (by the definition of tree). The problem is that this assumptions are not fulfilled in our setting:
+
+\begin{enumerate}
+	\item $G_b$ may not be a tree, this may result in false positives,
+	\item $c$ is always blue since we colour blue the path found at the beginning of \lstinline|GenStage| call.
+\end{enumerate}
+
+As described previously our algorithm handles false positives sufficiently well, so we can assume $G_b$ is a tree. The second problem can be avoided by investigating the colours of the edges (other than $c$) incident to $u$ and $v$. Two situations can arise now:
+
+\begin{enumerate}
+	\item the edge $c$ would be in the blue tree even if we didn't colour the path blue first
+	\item the edge $c$ is not in the blue tree, but $u$ or $v$ are
+\end{enumerate}
+
+In both cases note that $u \not \in V_b(X)$ from the definition of our path.
+
+In the first case $c$ may be connecting a leaf in $V_b$ to the rest of the graph. $u$ cannot be this leaf. If edge $c$ was connecting $v$ to the rest of $T_b$ then some edge incident to $u$ must be blue.
+
+In the second case, if only $v$ is blue then no disconnection happens, since $v$ is going to be coloured blue. If $u$ is blue, then some edge incident to $u$ (besides $c$) must be blue.
+
+In conclusion, colouring $u$ red, $v$ blue and $c$ black disconnects the blue tree, if and only if, $u$ is incident to a blue edge different from $c$.
+
+\subsection*{Finding a new blue subgraph interconnecting $V_b$}
+
+In an attempt to find a new blue subgraph $G_b'$ interconnecting $V_b$ we first colour the old $G_b$ black and then find $G_b'$ if possible. Finding $G_b'$ is done by breadth-first searching $G$ starting from some blue vertex of $X$ and counting the blue vertices which were found. Each time a blue vertex is found we colour the path from this vertex to the starting one blue, increase the counter marking how many of blue vertices we found and if this counter is equal to $\lvert V_b \rvert$ then we succeeded. If the search ends without reaching this equality the re-creation of blue subgraph has failed.
+
+\section{Testing correctness}
+
+Although we have given proof of correctness of the algorithm in chapters \ref{ch:algorithm} and \ref{ch:canonical}, we also employ several approaches to discover possible errors in transcription of the algorithm into C++ code. The first approach is testing with mechanisms built directly into the implementation.
+
+The other two approaches are systematic and randomized testing of the algorithm against a combinatorial "brute-force" algorithm. This algorithm simply enumerates all the possible combinations of less than $m$ edges and evaluates whether or not they form a $k$-bond by using the \lstinline|isMinCut| function\footnote{Defined in \lstinline|src/helpers.cpp|}.
+
+We implement the systematic and randomized tests in a program called \lstinline|tester|. This program calls repeatedly procedure \textit{check} with arguments depending on the source of graphs (random generation or standard input).
+
+The \textit{check} used above works as follows: For given $G$, $m$, $k$ the procedure calls function \lstinline|bruteforceGraphBonds| and the \textit{circuit-cocircuit} algorithm implementation. Then it computes the symmetric difference of the results and returns \textit{true} if and only if the symmetric difference is empty.
+
+To speed up the testing process \lstinline|tester| implements a simple parallelization. Each thread requests graphs from a shared "storage" and performs the check. In the randomized tester we avoid using locks -- the result is a faster execution at the cost of occasionally garbled output. These two effects are notable only when generating small graphs.
+
+
+\subsection*{Selftesting procedures}
+
+The algorithm contains methods to reveal errors due to graph traversal order (and thus choice of paths and the choice of a new blue tree interconnecting $V_b$).
+
+One is directly embedded in the choice of the unique shortest path. Recall the unique shortest path $P$ is chosen such that it minimizes the triplet $(\lvert P \rvert, len_\lambda(P), (\iota(e_1), ...,\iota(e_{\lvert P \rvert}))$. The map $\lambda$ is selected at random with each run of the algorithm to randomize the selection of the unique shortest path. Repeated tests have shown that this method is effective -- we intentionally changed the implementation to be incorrect in several ways and then observed different output with each run of the program.
+
+Second method of testing the algorithm right within the implementation is to change the bijection $\iota : edge \rightarrow \mathbb{N}$ such that if $G$ is a graph and the function $\iota$ is given with this graph then $\forall e \in E(G)$ we set $\iota(e) := m - \iota(e)$ where $m = max \{ \iota(e) \mid e \in E(G) \}$. This makes the algorithm choose the forest $F$ (both as a basis and as a $k$-way circuit) as different as possible from the forest which would be chosen with the original $\iota$. Effectiveness of this method was successfully tested as above.
+
+\subsection*{Using systematic graph generator}
+
+To prove the correctness of the implementation for graphs on $\leq 32$ vertices one could use a systematical graph generator \lstinline|geng| from package \lstinline|nauty| \cite{mckay_isom}. Program \lstinline|tester| reads graphs from the standard input and checks the algorithm against them. The graphs are expected to be in graph6 format, which is the same nauty's \lstinline|geng| produces. An easier to use tool called \lstinline|geng_tester.sh| is given in the folder \lstinline|tools|, this tool calls the graph generator \lstinline|geng| and redirects the output to our \lstinline|tester|.
+
+The program has been successfully tested on all 261080 mutually non-isomorphic connected graphs on nine vertices when finding $2,3,4,5$-bonds with up to $5$ edges.
+
+\subsection*{Randomly generated graphs}
+
+The systematical approach above is good if we have vast computational resources. However this is often not the case (given the number of graph isomorphism classes) and if we aim to demonstrate an error in the implementation then picking random graphs might reveal mistakes earlier.
+
+We are using the \lstinline|randomSimpleGraph| function from OGDF to generate random graphs on a given number of vertices and edges. These graphs are not guaranteed to be connected -- we make them connected by adding additional edges between the trees of the depth-first search traversal forest. As a result the requested number of edges is exceeded, but a slight variation does not interfere with the purpose this tester was built for.
+
+A different approaches to generate random graphs were explored but they were notably slower. Namely generating a random tree (using \lstinline|randomTree| from OGDF) and then adding the remaining edges at random was about two times slower. If this tree was to be generated with uniform probability (for example with Wilson's UST algorithm) it would again slow the testing down, this time very significantly.
+
