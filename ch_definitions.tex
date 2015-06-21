@@ -1,30 +1,32 @@
 
 \chapter{Definitions}
 
-\section{Graph}
+\section{Graphs}
 Graph is an ordered pair $(V,E)$ such that $E \subseteq {V \choose 2}$. We say that the elements of $V$ are \textit{vertices} and the elements of $E$ are \textit{edges}. For a given graph $G$ these sets are referred to as $V(G)$ and $E(G)$ respectively. Two vertices $u,v \in V$ are called \textit{adjacent} if there exists an edge $e \in E$ such that $e = \{u,v\}$. If $e = \{u, v\}$ is an edge then $e$ is \textit{incident to} $u,v$ and $u,v$ are the \textit{ends} of $e$.
 
-Any graph $H$ is called a~subgraph of $G$, denoted by $H \subseteq G$, if $V(H) \subseteq V(G)$, $E(H) \subseteq E(G)$ and all the edges in $E(H)$ are incident only to vertices in $V'$, formally $E(H) \subseteq E(G) \cap {V' \choose 2}$. If $E(H)$ is maximal, that is $E(H) = E(G) \cap { V' \choose 2 }$, then $H$ is called an \textit{induced subgraph}.
+Any graph $H$ is called a~subgraph of $G$, denoted by $H \subseteq G$, if $V(H) \subseteq V(G)$, $E(H) \subseteq E(G)$ and all the edges in $E(H)$ are incident only to vertices in $V(H)$, formally $E(H) \subseteq E(G) \cap {V(H) \choose 2}$. If $E(H)$ is maximal, that is $E(H) = E(G) \cap { V' \choose 2 }$, then $H$ is called an \textit{induced subgraph}.
 
 A \textit{path} $P$ is a finite sequence ($v_0,e_1,v_1,e_2,v_2,\ldots,v_t)$, such that $v_0, v_1,\ldots,v_t$ are mutually distinct vertices and each $e_i$, $1 \leq i \leq t$, is an edge with ends $v_{i-1}, v_i$. The \textit{length} of the path is $\lvert P \rvert = t$. The \textit{distance} of vertices $u$ and $v$ is the length of the shortest path $(u,\ldots,v)$. If $A,B$ are sets of vertices, $a \in A$, $b \in B$ and $P = (a,\ldots,b)$, then we call $P$ an $A{-}B$ path.
 
 A vertex $v$ is \textit{reachable} from a vertex $u$ if there exists a path from $u$ to $v$. Reachability is an equivalence relation and the \textit{connected components} (or just \textit{components}) of a graph are the subgraphs induced by the equivalence classes of this relation. A graph is \textit{connected} if it has a single connected component.
 
-A graph is called a \textit{tree} if it is connected but the set of its edges is inclusion-wise minimal. A graph is called a \textit{forest} if each of its components is a tree. If $G$ is a graph, $F \subseteq G$ is a forest and $V(F) = V(G)$ then $F$ is a \textit{spanning forest} of $G$. If $F$ is a spanning forest of $G$, $w : E(G) \rightarrow \mathbb{N}$ is an arbitrary \textit{weight} function and $F$ is minimum with respect to $\sum_{e \in T} w(e)$ then $F$ is a \textit{minimum spanning forest}. A spanning forest $T$ is a \textit{spanning tree} if it has a single component. A minimum spanning forest $T$ is a \textit{minimum spanning tree} if it has a single component.
-
-An \textit{edge cut} in a graph $G$ is a~set of edges $X \subseteq E(G)$ such that $G \setminus X$ has more connected components than $G$ has. A~$k$-way edge cut is a~cut $X$ such that $G \setminus X$ has at least $k$ connected components.
+A graph is called a \textit{tree} if it is connected but the set of its edges is inclusion-wise minimal. A graph is called a \textit{forest} if each of its components is a tree. If $G$ is a graph, $F \subseteq G$ is a forest and $V(F) = V(G)$ then $F$ is a \textit{spanning forest} of $G$. If $F$ is a spanning forest of $G$ with $k \in \mathbb{N}$ components, $w : E(G) \rightarrow \mathbb{N}$ is an arbitrary \textit{weight} function and $F$ is minimum with respect to $\sum_{e \in T} w(e)$, then $F$ is a \textit{minimum spanning forest} of $G$ with $k$ components. A spanning forest $T$ is a \textit{spanning tree} if it has a single component. A minimum spanning forest $T$ is a \textit{minimum spanning tree} if it has a single component.
 
 \pagebreak
 
+An \textit{edge cut} in a graph $G$ is a~set of edges $X \subseteq E(G)$ such that $G \setminus X$ has more connected components than $G$ has. A~$k$-way edge cut is a~cut $X$ such that $G \setminus X$ has at least $k$ connected components.
+
 \begin{note}
-	There is a difference between the notion of edge cut and 2-way edge cut. It can be seen in a disconnected graph where an edge cut cannot be empty while an empty set is a proper $2$-way edge cut.
+	There is a difference between the notion of edge cut and 2-way edge cut. It can be seen in a disconnected graph where an edge cut cannot be empty while the empty set is a proper $2$-way edge cut.
 \end{note}
 
-An edge cut in a graph is called a \textit{bond} if it is inclusion-wise minimal and a $k$-way edge cut is called a \textit{$k$-bond} if it is inclusion-wise minimal.
+If an edge cut is inclusion-wise minimal, then we call it \textit{bond}. If a $k$-way edge cut is inclusion-wise minimal, then we call it \textit{$k$-bond}.
 
-\textit{Breadth-first search} is a graph traversal algorithm. One of its basic properties is that when started in a vertex $v \in V(G)$ of a connected graph $G$ it finds the shortest path from $v$ to $u$ in $G$ for each $u \in V(G)$. \textit{Kruskal's algorithm} is an algorithm solving the minimum spanning tree problem. Both algorithms are thoroughly described by Cormen et al.\ in \cite{clrs}.
+Given is a graph $G$, vertices $u, v \in V(G)$ and the task to find the shortest path from $u$ to $v$ in $G$. The \textit{breadth-first search} algorithm computes this path.
 
-\section{Matroid}
+To find the minimum spanning tree of given graph the \textit{Kruskal's algorithm} can be used. Both algorithms are thoroughly described by Cormen et al.\ in \cite{clrs}.
+
+\section{Matroids}
 The following definitions and terminology are due to Oxley \cite{oxley2006matroid}.
 
 \begin{defn}[Matroid]
@@ -41,20 +43,24 @@ The second point in the above definition is called \textit{the basis exchange ax
 
 Subsets of matroid bases are called \textit{independent sets}, and the remaining sets are \textit{dependent}. Minimal sets not contained in a~basis are called \textit{circuits}, maximal sets not containing any basis are called \textit{hyperplanes}.
 
+\begin{exmp*}
+TODO
+%	Let $A$ be a matrix, $\mathcal{V} = V_1,\ldots,V_n$ be the column vectors of $A$ and let $\mathcal{I}$ be the collection of subsets of $\mathcal{V}$ such that each $I \in \mathcal{I}$ is linearly independent over $\mathbb{R}$. Then it can be seen that $M = (\mathcal{V}, \mathcal{I})$ is a~matroid.
+\end{exmp*}
+
 \begin{defn}[Dual matroid]
 Given matroid $M = (E,\mathcal{B})$ then $M^*$ is called the \textit{dual matroid of M} if $E(M) = E(M^*)$ and $\mathcal{B}(M^*) = \{E \setminus B : B \in \mathcal{B}(M) \}$. The circuits of $M^*$ are called \textit{cocircuits of $M$}.
 \end{defn}
 
-\pagebreak
 
-\begin{claim}[folklore]
+\begin{claim}[folklore, \cite{oxley2006matroid}]
 	\label{matroid_folklore}
 	Let $M = (E, \mathcal{B})$ be a matroid.
 
 	\begin{enumerate}[label=\alph*.]
 		\item If $B$ is a basis of $M$ and $e \in E \setminus B$, then $B \cup \{e\}$ contains precisely one circuit $C$ and $e \in C$.
 		\item If $H$ is a hyperplane of $M$ and $e \in E \setminus H$, then $H \cup \{e\}$ contains a basis $B$ of $M$ and $e \in B$.
-		\item A set $X \subseteq E$ is a cocircuit of $M$ if and only if $E \setminus X$ is a hyperplane of $M$.
+		\item A set $X \subseteq E$ is a cocircuit of $M$ if, and only if, $E \setminus X$ is a hyperplane of $M$.
 		\item Cocircuits of $M$ are the minimal sets intersecting every basis of $M$.
 	\end{enumerate}
 \end{claim}
