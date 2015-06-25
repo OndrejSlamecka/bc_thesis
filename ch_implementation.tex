@@ -28,8 +28,8 @@ Our implementation uses various tools from the C++11 standard library: random en
 Let $G$ be a graph, $k$ the given multiplicity of the resulting cuts and $Y$ a $j$-bond such that $j < k$. In our implementation we are using Kruskal's algorithm to find the $\iota$-minimum spanning forest $F \subseteq G$ with the following modifications:
 
 \begin{itemize}
-	\item we avoid adding edges of $Y$ to $F$ (confer Claim \ref{forest_sel_claim})
-	\item we stop generating $F$ when $\lvert E(F) \rvert = |V(G)| - (k - 1)$, because this is the number of edges a forest of $k - 1$ trees has
+	\item we avoid adding edges of $Y$ to $F$ (confer Claim \ref{forest_sel_claim}),
+	\item we stop generating $F$ when $\lvert E(F) \rvert = |V(G)| - (k - 1)$, because this is the number of edges a forest of $k - 1$ trees has.
 \end{itemize}
 
 With the canonical generation the algorithm does not start generation from those edges $e$ of $F$ which satisfy $\iota(e) \leq \tau(Y)$ (confer Definition \ref{def:tau}). Such comparison is possible by maintaining a variable we call \lstinline|lastBondFirstEdge| together with the variable $X$ (confer Algorithm \ref{alg:final}). In this variable we are storing the edge $c_{s(j)+1}$, where $j$ is the largest index such that $c_{s(j)+1}$ has been added to $X$. From its definition the variable is updated at the beginning of each stage.
@@ -53,9 +53,9 @@ When implementing the colouring it was necessary to allow for
 Before we continue to specific implementation details of those two tasks let us note:
 
 \begin{itemize}
-	\item it will turn out that in $T_b$ we do not need to recognize, and thus do not need to colour, other vertices as blue than those in $V_b$
+	\item it will turn out that in $T_b$ we do not need to recognize, and thus do not need to colour, other vertices as blue than those in $V_b$,
 
-	\item when adding each edge $c$ from the path (between $V(T_r)$ and $V_b$) to $X$ we would have to colour blue the part of the path from $c$ to the blue tree. To avoid repetition we instead colour the whole path blue right after finding the path
+	\item when adding each edge $c$ from the path (between $V(T_r)$ and $V_b$) to $X$ we would have to colour blue the part of the path from $c$ to the blue tree. To avoid repetition we instead colour the whole path blue right after finding the path.
 \end{itemize}
 
 
@@ -132,7 +132,7 @@ In an attempt to find a new blue subgraph $G_b'$ interconnecting $V_b$ we first 
 
 \section{Testing correctness}
 
-Although we have given proof of correctness of the algorithm in chapters \ref{ch:algorithm} and \ref{ch:canonical}, we also employ several approaches to discover possible errors in transcription of the algorithm into C++ code. The first approach is testing with mechanisms built directly into the implementation.
+Although we have given a proof of correctness of the algorithm in chapters \ref{ch:algorithm} and \ref{ch:canonical}, we also employ several approaches to discover possible errors in transcription of the algorithm into C++ code. The first approach is testing with mechanisms built directly into the implementation.
 
 The other two approaches are systematic and randomized testing of the algorithm against a combinatorial "brute-force" algorithm. This algorithm simply enumerates all the possible combinations of less than $m$ edges and evaluates whether or not they form a $k$-bond by using the \lstinline|isMinCut| function\footnote{Defined in \lstinline|src/helpers.cpp|}.
 

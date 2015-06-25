@@ -4,7 +4,7 @@
 \section{Graphs}
 Graph is an ordered pair $(V,E)$ such that $E \subseteq {V \choose 2}$. We say that the elements of $V$ are \textit{vertices} and the elements of $E$ are \textit{edges}. For a given graph $G$ these sets are referred to as $V(G)$ and $E(G)$ respectively. Two vertices $u,v \in V$ are called \textit{adjacent} if there exists an edge $e \in E$ such that $e = \{u,v\}$. If $e = \{u, v\}$ is an edge then $e$ is \textit{incident to} $u,v$ and $u,v$ are the \textit{ends} of $e$.
 
-Any graph $H$ is called a~subgraph of $G$, denoted by $H \subseteq G$, if $V(H) \subseteq V(G)$, $E(H) \subseteq E(G)$ and all the edges in $E(H)$ are incident only to vertices in $V(H)$, formally $E(H) \subseteq E(G) \cap {V(H) \choose 2}$. If $E(H)$ is maximal, that is $E(H) = E(G) \cap { V' \choose 2 }$, then $H$ is called an \textit{induced subgraph}.
+Any graph $H$ is called a~subgraph of $G$, denoted by $H \subseteq G$, if \linebreak ${V(H) \subseteq V(G)}$, $E(H) \subseteq E(G)$ and all the edges in $E(H)$ are incident only to vertices in $V(H)$, formally $E(H) \subseteq E(G) \cap {V(H) \choose 2}$. If $E(H)$ is maximal, that is ${E(H) = E(G) \cap { V(H) \choose 2 }}$, then $H$ is called an \textit{induced subgraph}.
 
 A \textit{path} $P$ is a finite sequence ($v_0,e_1,v_1,e_2,v_2,\ldots,v_t)$, such that $v_0, v_1,\ldots,v_t$ are mutually distinct vertices and each $e_i$, $1 \leq i \leq t$, is an edge with ends $v_{i-1}, v_i$. The \textit{length} of the path is $\lvert P \rvert = t$. The \textit{distance} of vertices $u$ and $v$ is the length of the shortest path $(u,\ldots,v)$. If $A,B$ are sets of vertices, $a \in A$, $b \in B$ and $P = (a,\ldots,b)$, then we call $P$ an $A{-}B$ path.
 
@@ -12,7 +12,6 @@ A vertex $v$ is \textit{reachable} from a vertex $u$ if there exists a path from
 
 A graph is called a \textit{tree} if it is connected but the set of its edges is inclusion-wise minimal. A graph is called a \textit{forest} if each of its components is a tree. If $G$ is a graph, $F \subseteq G$ is a forest and $V(F) = V(G)$ then $F$ is a \textit{spanning forest} of $G$. If $F$ is a spanning forest of $G$ with $k \in \mathbb{N}$ components, $w : E(G) \rightarrow \mathbb{N}$ is an arbitrary \textit{weight} function and $F$ is minimum with respect to $\sum_{e \in T} w(e)$, then $F$ is a \textit{minimum spanning forest} of $G$ with $k$ components. A spanning forest $T$ is a \textit{spanning tree} if it has a single component. A minimum spanning forest $T$ is a \textit{minimum spanning tree} if it has a single component.
 
-\pagebreak
 
 An \textit{edge cut} in a graph $G$ is a~set of edges $X \subseteq E(G)$ such that $G \setminus X$ has more connected components than $G$ has. A~$k$-way edge cut is a~cut $X$ such that $G \setminus X$ has at least $k$ connected components.
 

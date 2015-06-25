@@ -9,6 +9,17 @@
   scaled=1.03
 ]{inconsolata}
 \usepackage[usenames,dvipsnames]{xcolor}
+
+\usepackage{geometry}
+\geometry{
+	a4paper,
+	total={210mm,297mm},
+	left=35mm,
+	right=35mm,
+	top=35mm,
+	bottom=35mm,
+}
+
 \usepackage[                      % Clickable links
   plainpages = false,             % We have multiple page numberings
   pdfpagelabels                   % Generate pdf page labels
@@ -88,13 +99,20 @@
 
 % section line
 \newcommand{\sectionline}{%
-	\nointerlineskip \vspace{0.2cm}%
+	\nointerlineskip \vspace{0.5cm}%
 	\begin{center}
 		\rule{0.5\linewidth}{.7pt}
 	\end{center}
-	\par\nointerlineskip \vspace{0.2cm} % \baselineskip
+	\par\nointerlineskip \vspace{0.5cm} % \baselineskip
 }
 
+% Shortcuts
+\usepackage[ligature]{semantic}
+\mathlig{<=>}{\Leftrightarrow}
+\mathlig{=>}{\Rightarrow}
+\mathlig{<=}{\Leftarrow}
+
+\newcommand{\sm}{\setminus}
 
 % http://tex.stackexchange.com/questions/89745/how-to-diagonally-divide-a-table-cell-properly
 \usepackage{array}

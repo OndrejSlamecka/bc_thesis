@@ -413,16 +413,7 @@ We compare the number of generated bonds (including more permutations of the sam
 
 \section*{Generated non-canonical permutations}
 
-If we consider canonicity with respect to each bond, not bond and its certain partition as in the definition of $\mcan()$, our algorithm still generates more permutations of the same bond. Due to its complexity and (as demonstrated below) little impact on the result, the algorithm does not perform an explicit isomorphism test for each generated bond. We show an example and document how much is the result non-canonical.
-
-\begin{figure}[H]
-	\caption{Let $k = 3$, $m = 3$. In stage 1 the algorithm generates bonds 0,1 and 0,2. In stage 2 bond 0,1 is extended to 0,1,2 and bond 0,2 is extended to 0,2,1. }
-\begin{center}
-	\input{fig/graph9.tex}
-\end{center}
-\end{figure}
-
-\vspace{-0.5cm}
+If we consider canonicity with respect to each bond, not bond and its certain partition as in the definition of $\mcan()$, our algorithm still generates more permutations of the same bond. Due to its complexity and (as demonstrated below) little impact on the result, the algorithm does not perform an explicit isomorphism test for each generated bond. We document how much is the result non-canonical.
 
 We measure how often multiple generation happens when processing real-world road networks. The tables show increase in the number of generated bonds (compared to the number of unique \linebreak bonds) in percent. The bound on the number of edges in the cuts changes with columns, the multiplicity of the cut changes with rows.
 
