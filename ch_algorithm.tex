@@ -1,12 +1,12 @@
 \chapter{Circuit-Cocircuit algorithm}
 \label{ch:algorithm}
 
-\section{Abstract Circuit-Cocircuit meta-algorithm}
+\section{Abstract Circuit-Cocircuit Meta-algorithm}
 
 The problem of exhaustive generation of minimal edge cuts in \linebreak a graph can be generalized to the problem of exhaustive generation of cocircuits in a matroid.
 
 \begin{defn}[Cycle matroid]
-	\label{cycle_matroid}
+	\label{defn:cycle_matroid}
 	Given a connected graph $G$ its \textit{cycle matroid} is a matroid on the ground set $E(G)$ and its bases are the edges of the spanning trees of G. Moreover independent sets are the acylic subsets (forests) of G, circuits are the cycles of G and cocircuits are the minimal edge cuts of G.
 \end{defn}
 
@@ -22,8 +22,8 @@ Using this proposition an algorithm with the following gist can be constructed. 
 \clearpage
 
 \begin{algorithm}
-	\caption{Abstract circuit-cocircuit meta-algorithm}
-	\label{meta-algorithm}
+	\caption{Abstract Circuit-Cocircuit Meta-algorithm}
+	\label{alg:meta}
 \begin{algorithmic}[1]
 	\Require Matroid $M = (E, \mathcal{B})$ and a cocircuit size bound $m \in \mathbb{N}$
 	\Ensure All cocircuits of $M$ with size $\leq m$
@@ -50,30 +50,35 @@ Using this proposition an algorithm with the following gist can be constructed. 
 \end{algorithmic}
 \end{algorithm}
 
+
 \begin{thm}
 	\label{meta_alg_correctness}
-	Algorithm \ref{meta-algorithm} generates exactly all the cocircuits of size $\leq m$ in the matroid $M$.
+	Algorithm \ref{alg:meta} generates exactly all the cocircuits of size $\leq m$ in the matroid $M$.
 \end{thm}
 
 \begin{proof}
 	First, we show that any set $X_0$ returned by the algorithm is a~cocircuit and $\lvert X_0 \rvert \leq m$. By the condition on line 7, the set $E \setminus X_0$ contains a~hyperplane $H$ of $M$ and $\lvert X_0 \rvert \leq m$. If $H = E \setminus X_0$ then we are done by Claim \ref{matroid_folklore}.c. Now suppose $H \neq E \setminus X_0$ and choose $e \in E \setminus (X_0 \cup H)$. According to Claim \ref{matroid_folklore}.b there is a basis $B_0 \subseteq H \cup \{e\}$. Choose $a \in X_0$ and let $C_0$ be the circuit contained in $B_0 \cup \{a\}$ according to Claim \ref{matroid_folklore}.a. Then $C_0 \cap X_0 = \{a\}$ contradicts the condition on line 11 and thus $H$ must be equal to $E \setminus X_0$.
 
-	Second, we show that any cocircuit $X_1$, $\lvert X_1 \rvert \leq m$, is generated. Let ${Z_1 \subseteq X_1}$ be the largest subset of $X_1$ such that GenCocircuits($Z_1$) has been called. By Claim \ref{matroid_folklore}.d, $X_1 \cap B$ is nonempty for the basis $B$ selected on line $1$ and thus $Z_1$ is well-defined and non-empty.
+	Second, we show that any cocircuit $X_1$, $\lvert X_1 \rvert \leq m$, is returned. Let ${Z_1 \subseteq X_1}$ be the largest subset of $X_1$ such that GenCocircuits($Z_1$) has been called. By Claim \ref{matroid_folklore}.d, $X_1 \cap B$ is nonempty for the basis $B$ selected on line $1$ and thus $Z_1$ is well-defined and non-empty.
 	If ${Z_1 = X_1}$ then $X_1$ will be returned since it is a cocircuit and no circuit $C$ is found on line $10$. Suppose $Z_1 \neq X_1$ and choose $d \in X_1 \setminus Z_1$. By Claim \ref{matroid_folklore}.b there is a basis $B_1 \subseteq H_1 \cup \{d\}$ (where $H_1 := E \setminus X_1$ is a hyperplane of $M$). For any $b \in Z_1$, let $C_1$ be the circuit contained in $B_1 \cup \{b\}$ according to Claim \ref{matroid_folklore}.a. Consequently, there exists a~circuit $C$ to be found by the algorithm on line 10 (note that it may be $C \neq C_1$). Since $\lvert C \cap X_1 \rvert \neq 1$, there exists $d' \in C \cap X_1$ such that $d'\not\in Z_1$, and \textsc{GenCocircuits}($Z_1 \cup \{d'\}$) is eventually called, contradicting the maximality of $Z_1$.
 \end{proof}
 
+For some $Z_1$ the set $D$ has to be chosen (on line 14) such that for any cocircuit $X_1 \supset Z_1$, $\lvert X_1 \rvert \leq m$, the intersection $D \cap X_1$ is nonempty and thus contains an element to extend $Z_1$.
+
 \begin{cor}
 	\label{cor_circuit_subset}
-	Algorithm \ref{meta-algorithm} remains correct even if line 14 sets $D$ to be a subset of $C \setminus X$, such that $D$ is guaranteed to intersect every cocircuit $X_1 \supseteq X$ in $M$.
+	Algorithm \ref{alg:meta} remains correct even if line 14 sets $D$ to be a subset of $C \setminus X$, such that $D$ is guaranteed to intersect every cocircuit $X_1 \supseteq X$ in $M$.
 \end{cor}
 
-\begin{proof}
-	TODO
-\end{proof}
+% TODO: V poznamkach je vyznaceno "short proof", ale prijde mi, ze je to primo v dukazu predchozi vety; "there exists d' \in C \cap X_1 such that d' \not \in Z_1 and GenCocircuits(Z_1 + d') is called"
+
+\begin{rem}
+	The algorithm does nondeterministic choices on lines 1, 10, 15 and may also be nondeterministic on line 14 by Corollary \ref{cor_circuit_subset}.
+\end{rem}
 
 \section{$2$-way cuts in a graph}
 
-We present details of implementing the meta-algorithm to generate $2$-way cuts in a given graph.
+We present details of implementing the Meta-algorithm to generate $2$-way cuts in a given graph.
 
 We introduce a colouring of the graph (in the sense of labeling) to help us decide the hyperplane existence question on line 7. During the progress of the algorithm some edge $e$ is chosen to be added to $X$ and the algorithm continues to call \textsc{GenCocircuits}. Before this call we colour one end of $e$ red and the other blue. When adding the first edge $e = \{u ,v\}$ to $X$ it is arbitrary whether $u$ is coloured red and $v$ blue (or vice versa). The situation with the next edges added to $X$ is described below. This colouring has to be consistent among edges sharing a vertex.
 
@@ -81,51 +86,65 @@ Let $V(X) = V_r \cup V_b$ and call $V_r$ the red vertices of $X$ and $V_b$ the b
 
 We add to $T_r$ only those edges $e$ for which it is guaranteed that \textsc{GenCocircuits} is called with $X \cup \{e\}$. We do not remove elements from $T_r$ (within recursive calls) while elements may be removed from $T_b$ and added to $X$. This shows that $T_r$ and $T_b$ are not treated symmetrically. In the end we want to have a cut $X$ separating the graph into two connected components: $T_r$ in one component, $T_b$ in the other. It follows that $V(T_r) \cap V(T_b) = \varnothing$ and $V_r \subseteq V(T_r)$, $V_b \subseteq V(T_b)$.
 
-
-TODO: Refine this lemma and its proof.
-
 \begin{lem}
 	\label{lem:hyperplane_existence}
-	Let $G$ be a~connected graph, $M = (E, \mathcal{B})$ its corresponding cycle matroid and $Y \subseteq E(G)$. $E \setminus Y$ contains a hyperplane if, and only if, the vertices of each edge in $Y$ can be coloured red and blue such that this colouring is consistent among the edges in $Y$ and such that the vertices of each colour can be connected by a tree in $G \sm Y$.
+	Let $G$ be a~connected graph, $M = (E, \mathcal{B})$ its corresponding cycle matroid and $Y \subseteq E(G)$. $E \setminus Y$ contains a hyperplane if, and only if, the vertices of each edge in $Y$ can be coloured red and blue, such that the vertices of each colour can be connected by a~tree in $G \sm Y$. This colouring has to be consistent among the edges in $Y$.
 \end{lem}
-
 
 \begin{proof}
 	$(=>)$
-	If $E \sm Y$ contains a hyperplane, then there exists a~cocircuit $X \supseteq Y$ by Claim \ref{matroid_folklore}.c. By Definition \ref{cycle_matroid} $X$ is a bond in $G$ and $G \sm X$ has two connected components, as more components would contradict the minimality of $X$. Colouring one of this components red and the other blue yields finishes the argument.
+	If $E \sm Y$ contains a hyperplane, then there exists a~cocircuit $X \supseteq Y$ by Claim \ref{matroid_folklore}.c. By Definition \ref{defn:cycle_matroid} $X$ is a bond in $G$ and $G \sm X$ has two connected components, as more components would contradict the minimality of $X$. Colouring one component red and the other blue finishes the argument.
 
-	$(<=)$ Given are two trees, one coloured red and the other blue. Start in one vertex of the red tree and traverse graph $G$ without crossing the to-be generated bond $X \supseteq Y$. Repeat this procedure in the blue tree. This determines some bond $X$, therefore a cocircuit in $M$ and thus by Claim \ref{matroid_folklore}.c a~hyperplane $E \sm X$. Since $Y \subseteq X$ then $E \sm Y$ contains a hyperplane.
-
+	$(<=)$ Given are two trees, one coloured red and the other blue. Start in one vertex of the red tree and traverse graph $G$ without crossing the to-be generated bond $X \supseteq Y$. Repeat this procedure in the blue tree. This determines some bond $X$, therefore a cocircuit in $M$ and thus by Claim \ref{matroid_folklore}.c a~hyperplane $E \sm X$. Consequently $E \sm Y$ contains a hyperplane since $Y \subseteq X$.
 \end{proof}
 
+\begin{cor}
+	Let $G$ be a connected graph, $Y \subseteq E(G)$ and let $G$ be coloured according to Lemma \ref{lem:hyperplane_existence}. For any bond $X \subseteq E(G)$ such that $Y$ is a prefix of $X$, the colouring of $G$ can be extended such that each component of $G \sm X$ can be coloured red or blue respectivelly.
+\end{cor}
 
-\subsection*{Modifying Algorithm \ref{meta-algorithm} to generate $2$-bonds of a graph}
+\subsection*{$2$-bonds in a graph}
+
 
 \begin{rec}
 	Let $M$ be the cycle matroid of graph $G$. The bases, circuits, cocircuits of $M$ are the sets of edges of the spanning trees, cycles and bonds in $G$.
 \end{rec}
 
-\begin{itemize}
-	\item On line 1 choose an arbitrary spanning tree of $G$.
+\begin{ams_algorithm}[Circuit-Cocircuit algorithm for 2-bonds]
+	\label{alg:2bonds}
+	\hfill \\
+	Modifying Algorithm \ref{alg:meta}:
 
-	\item On line 3 the existence of a~hyperplane can be easily decided with use of Lemma \ref{lem:hyperplane_existence} and the previously defined colouring. $E \setminus X$ contains a hyperplane of $M$ if, and only if, $T_r$ and $T_b$ are both connected subgraphs of $G$.
+	\begin{itemize}
+		\item On line 1 choose an arbitrary spanning tree of $G$.
 
-	\item Choose $D$ to be the shortest path in $G \setminus X$ between a vertex from $V(T_r)$ and a vertex from $V_b$. For every such $D$, it holds that $D \cap E(T_r) = \varnothing$ and there exists a cycle $C \subseteq D \cup E(T_r) \cup X$ in $G$ with $\lvert C \cap X \rvert = 1$.
+		\item On line 3 the existence of a~hyperplane can be easily decided with use of Lemma \ref{lem:hyperplane_existence} and the previously defined colouring. $E \setminus X$ contains a hyperplane of $M$ if, and only if, $T_r$ and $T_b$ are both connected subgraphs of $G$.
 
-\end{itemize}
+		\item Choose $D$ to be the shortest path in $G \setminus X$ between a vertex from $V(T_r)$ and a vertex from $V_b$.
+			For every such $D$, $D \cap E(T_r) = \varnothing$ and there exists a cycle $C \subseteq D \cup E(T_r) \cup X$ in $G$ with $\lvert C \cap X \rvert = 1$.
 
-TODO: Prove there exists the cycle $C$ in the last item
+	\end{itemize}
+\end{ams_algorithm}
 
-First two modifications are possible from the definition of cycle matroid. For the third modification we have to show that the path $D$ is chosen such that it satisfies the requirements from corollary \ref{cor_circuit_subset}. It follows from an easy induction argument:
+First two modifications are possible from the definition of cycle matroid. The third modification is possible due to Claim \ref{claim:tr_vb_path}.
 
-In the base case, that is before choosing the first circuit, the modification does not affect anything since $T_r = \varnothing$ -- all the subsets of the to-be-generated $2$-bonds are chosen. Now consider an arbitrary recursive call to \textsc{GenCocircuits}. By the induction hypothesis the algorithm has not missed any subset of some $2$-bond yet and by the colouring scheme above we add to $T_r$ only those edges $e$ for which the algorithm guarantees it has called \textsc{GenCocircuits}$(X \cup \{e\})$.
+\begin{claim}
+	\label{claim:tr_vb_path}
+	In the setting of Algorithm \ref{alg:meta} let $D$ be the shortest path in $G \setminus X$ between a vertex from $V(T_r)$ and a vertex from $V_b$. Every such $D$ satisfies the requirements of Corollary \ref{cor_circuit_subset}.
+\end{claim}
+
+
+\begin{proof}
+	In the base case, $T_r = \varnothing$, $D$ is equal to $C \sm X$.
+
+Now consider an arbitrary recursive call to \textsc{GenCocircuits}. By the induction hypothesis the algorithm has not missed any subset of some $2$-bond yet and by the colouring scheme described above we add to $T_r$ only those edges $e$ for which the algorithm guarantees it has called \textsc{GenCocircuits}$(X \cup \{e\})$.
+\end{proof}
 
 \section{$k$-way cuts in graph}
 
-The above described implementation of Algorithm \ref{meta-algorithm} generates the $2$-bonds of some connected graph $G$. Now consider $G' = G \setminus Y$, where $Y$ is a $2$-bond of $G$. $G'$ has two connected components and we can apply the algorithm again to each of them to generate the $2$-bonds of the components. It can be proved that the union of $Y$ and any $2$-bond of $G'$ is a $3$-bond of $G$. Such a recursive application of the algorithm can be used to generate all $k$-bonds for some given $k \geq 0$. To formalize this \textit{stepwise} approach and to set it up within the scheme of Meta-algorithm \ref{meta-algorithm}, we start with the definition of $k$-way cycle matroid.
+Algorithm \ref{alg:2bonds} generates the $2$-bonds of some connected graph $G$. Now consider $G' = G \setminus Y$, where $Y$ is a $2$-bond of $G$. $G'$ has two connected components and we can apply Algorithm \ref{alg:2bonds} again to each of them to generate the $2$-bonds of the components. It can be proved that the union of $Y$ and any $2$-bond of $G'$ is a $3$-bond of $G$. Such a recursive application of the algorithm can be used to generate all $k$-bonds for some given $k \geq 0$. To formalize this \textit{stepwise} approach and to set it up within the scheme of Meta-algorithm \ref{alg:meta}, we start with the definition of $k$-way cycle matroid.
 
 \begin{defn}[$k$-way cycle matroid]
-	\label{kway_cycle_matroid}
+	\label{defn:kway_cycle_matroid}
 	Let $G$ be a graph on less than $k \geq 2$ connected components. The \textit{$k$-way cycle matroid} of $G$ is a matroid on the ground set $E(G)$, such that its bases are the edge sets of the spanning forests of $G$ that consist of $k-1$ trees.
 
 	The bases, circuits, cocircuits and hyperplanes of the $k$-way cycle matroid are also called the $k$-way bases, circuits, cocircuits, hyperplanes of $G$.
@@ -134,7 +153,7 @@ The above described implementation of Algorithm \ref{meta-algorithm} generates t
 From the definition above we may conclude the following claim.
 
 \begin{claim}
-	\label{circuit_types}
+	\label{claim:circuit_types}
 	Let $G$ be a graph consisting of less than $k \geq 2$ connected components.
 	The $k$-way cocircuits of $G$ are the $k$-bonds of $G$. The $k$-way circuits of $G$ are of two types, \textit{type-C} and \textit{type-F}.
 
@@ -144,12 +163,12 @@ From the definition above we may conclude the following claim.
 	\end{enumerate}
 \end{claim}
 
-Before defining the stepwise circuit-cocircuit implementation we first need to introduce the following technical term. The \textit{level $i$ of recursion} in Algorithm \ref{meta-algorithm} is the number of calls to the procedure \textsc{GenCocircuits} currently being processed (on the \textit{call stack}).
+Before defining the stepwise circuit-cocircuit implementation we first need to introduce the following technical term. The \textit{level $i$ of recursion} in Algorithm \ref{alg:meta} is the number of calls to the procedure \textsc{GenCocircuits} currently being processed (on the \textit{call stack}).
 
 \begin{defn}[Stepwise circuit-cocircuit implementation scheme]
 	\label{defn:stepwise_scheme}
 
-	We call an implementation of Algorithm \ref{meta-algorithm} \textit{stepwise} if, for every set $X = X_0$, $\lvert X_0 \rvert = l$, generated by the algorithm,
+	We call an implementation of Algorithm \ref{alg:meta} \textit{stepwise} if, for every set $X = X_0$, $\lvert X_0 \rvert = l$, generated by the algorithm,
 
 	\begin{enumerate}
 		\item $X_0$ is an ordered sequence $(c_1, c_2,\ldots,c_l)$, where $c_i$ has been \linebreak added to $X_0$ at the level $i-1$ of recursion,
@@ -162,9 +181,7 @@ Before defining the stepwise circuit-cocircuit implementation we first need to i
 
 \begin{defn}[Stepwise partition]
 	\label{defn:stepwise_partition}
-
-	Let $Z$ be a $k$-bond. For $1 \leq j < k$, let $Z^{j} = \{c_{s(j)+1},\ldots,c_{s(j+1)}\}$. An ordered partition $(Z^1, \ldots, Z^{k-1})$ of $X_0$ is called a stepwise partition if there exists a stepwise implementation (confer Definition \ref{defn:stepwise_scheme}) of Algorithm \ref{meta-algorithm}, such that the elements of $Z^j$ are added to $X$ in its $j$-th stage.
-
+	Let $Z$ be a $k$-bond. For $1 \leq j < k$, let $Z^{j} = \{c_{s(j)+1},\ldots,c_{s(j+1)}\}$. An ordered partition $(Z^1, \ldots, Z^{k-1})$ of $Z$ is called a~stepwise partition if there exists a~stepwise implementation (confer Definition \ref{defn:stepwise_scheme}) of Algorithm \ref{alg:meta}, such that the elements of $Z^j$ are added to $X$ in its $j$-th stage.
 \end{defn}
 
 \begin{rem}
@@ -172,36 +189,33 @@ Before defining the stepwise circuit-cocircuit implementation we first need to i
 \end{rem}
 
 \begin{rem}
-	Not every ordering of $\{Z^1, \ldots, Z^{k-1}\}$ is a valid stepwise partition. On the other hand, by Lemma \ref{stepwise_is_welldefined}, there exists a valid stepwise partition for each $k$-bond.
+	Not every ordering of $\{Z^1, \ldots, Z^{k-1}\}$ is a valid stepwise partition. On the other hand, by Lemma \ref{lem:stepwise_is_welldefined}, there exists a valid stepwise partition for each $k$-bond.
 \end{rem}
 
 The following lemma asserts that the $k$-bonds can be generated by a stepwise implementation of the Circuit-Cocircuit algorithm.
 
 \begin{lem}
-	\label{stepwise_is_welldefined}
+	\label{lem:stepwise_is_welldefined}
 	Let $G$ be a connected graph and $X \subseteq E(G)$ a $k$-bond, $k \geq 2$.
 	For any $i$-bond $Z \subset X$ of $G$, $i < k$, there exists an $(i+1)$-bond $Y$ of $G$ such that $X \supseteq Y \supset Z$.
 \end{lem}
 
 \begin{proof}
-	TODO: Update proof.
+	Let $A = X \sm Z$, $e \in A$ and $G'' = G \sm X$. $G'' \cup \{e\}$ has $k-1$ components, since $X$ is a minimal $k$-way cut. Choose maximal $A^1 \subseteq A$ with $e \in A^1$, such that $G'' \cup A^1$ has $k-1$ components. In the same manner construct $A^2,\ldots,A^{k-i-1}$, where $A^{k-i-1}$ is a maximal subset of $A$ such that ${G'' \cup A^{k-i-1}}$ has $i$ components. This constructions yields any $Z = X \sm A^{k-i-1}$.
 
-	Let $G'' = G \setminus X$. Consider a set of edges $A \subseteq X$ such that $G'' \cup A$ has $(i+1)$ connected components. If $A$ is maximal such set, then there exists some $(i+1)$-bond $Y = X \setminus A$.
+	Now consider $G' = G \sm Z$, a~graph on $i$ components. By $B$ denote \linebreak ${A^{k-i-1} \sm A^{k-i-2}}$ and by $G'_0$ denote the component of $G'$ containing $B$. We choose some $f \in B$ and observe that all the remaining edges in $B$ (and no other edges in $G'_0$) lie on a common cycle with $f$ in $G'_0$. Thus $G' \sm B$ is a~graph on $i+1$ components and $Y = Z \cup B$.
 
-	Now let $G' = G \setminus Y$. Consider a set $B \subseteq Y$ such that $G' \cup B$ has $i$~connected components. Such $B$ exists, because $Y$ is a~minimal $(i+1)$-way cut, thus $G' \cup \{f\}$ has $i$-connected components for some $f~\in~Y$. If $B$ is maximal set such that $G' \cup B$ has $i$ connected components, then there is some $i$-bond $Z = Y \setminus B = X \setminus (A \cup B)$.
-
-	In the base case this construction is clearly possible and the \linebreak lemma follows by induction.
+	In the base case, $k = 2$, this construction is clearly possible and the lemma follows by induction.
 \end{proof}
 
-With Theorem \ref{meta_alg_correctness} and Lemma \ref{stepwise_is_welldefined} we can easily conclude:
+With Theorem \ref{meta_alg_correctness} and Lemma \ref{lem:stepwise_is_welldefined} we can easily conclude:
 
 \begin{thm}
 	\label{thm:stepwise_impl_correctness}
-	For any given graph $G$ a stepwise implementation of Algorithm \ref{meta-algorithm} can be used to generate all the $k$-bonds in $G$.
+	For any given graph $G$ a stepwise implementation of Algorithm \ref{alg:meta} can be used to generate all the $k$-bonds in $G$.
 \end{thm}
 
-
-\noindent We will also use the following two technical lemmas.
+We will also use the following two technical lemmas.
 
 \begin{lem}
 	\label{stepwise_2bond}
@@ -209,13 +223,13 @@ With Theorem \ref{meta_alg_correctness} and Lemma \ref{stepwise_is_welldefined} 
 \end{lem}
 
 \begin{proof}
-	The set $B$ from the proof of Lemma \ref{stepwise_is_welldefined} is a $2$-bond.
+	The set $B$ from the proof of Lemma \ref{lem:stepwise_is_welldefined} is a $2$-bond.
 \end{proof}
 
 
 \begin{lem}
 	\label{lem:kway_circuit_types}
-	For each stage $j$, $1 < j < k$, of a stepwise implementation of the Circuit-Cocircuit Meta-algorithm \ref{meta-algorithm} respecting the Definition \ref{defn:stepwise_scheme} holds the following,
+	For each stage $j$, $1 < j < k$, of a stepwise implementation of the Circuit-Cocircuit Meta-algorithm \ref{alg:meta} respecting the Definition \ref{defn:stepwise_scheme} holds the following,
 
 	\begin{enumerate}[label=\alph*.]
 		\item the set $C$ chosen on line 10 at the level $s(j)$ has to be a type-F (spanning) circuit,
@@ -224,11 +238,11 @@ With Theorem \ref{meta_alg_correctness} and Lemma \ref{stepwise_is_welldefined} 
 \end{lem}
 
 \begin{proof}[Proof (\ref{lem:kway_circuit_types}.a)]
-	In each stage $j$, the first edge the algoritm selects is $c_{s(j)+1}$ from $C$ which is a $k$-way circuit in $G$. Since the set $\{c_1,\ldots,c_{s(j)}\}$ forms a $j$-bond in $G$, the value of $C$ at the level $s(j)$ cannot be a type-C circuit and thus it has to be a type-F circuit by Claim \ref{circuit_types}.
+	In each stage $j$, the first edge the algoritm selects is $c_{s(j)+1}$ from $C$ which is a $k$-way circuit in $G$. Since the set $\{c_1,\ldots,c_{s(j)}\}$ forms a $j$-bond in $G$, the value of $C$ at the level $s(j)$ cannot be a type-C circuit and thus it has to be a type-F circuit by Claim \ref{claim:circuit_types}.
 \end{proof}
 
 \begin{proof}[Proof (\ref{lem:kway_circuit_types}.b)]
-	By its construction the set $B$ in proof of Lemma \ref{stepwise_is_welldefined} has exactly one edge, call it $f$, from some type-F circuit and each edge $e \in (B \setminus \{f\})$ lies in a type-C circuit together with $f$.
+	By its construction the set $B$ in proof of Lemma \ref{lem:stepwise_is_welldefined} has exactly one edge, call it $f$, from some type-F circuit and each edge $e \in (B \setminus \{f\})$ lies in a type-C circuit together with $f$.
 \end{proof}
 
 \subsection*{Extending a $j$-bond to $(j+1)$-bonds}
@@ -237,7 +251,7 @@ To modify the original algorithm to fit into the scheme for generating $k$-bonds
 
 \begin{algorithm}
 	\caption{One stage of stepwise implementation}
-	\label{algorithm-one_stage}
+	\label{alg:one-stage}
 \begin{algorithmic}[1]
 	\Require A connected graph $G$, parameters $j, k, m \in \mathbb{N}, j < k, m \geq 1$, and a $j$-bond $Y_1 \subseteq E(G)$
 	\Ensure A collection of $(j+1)$-bonds such that for each $k$-bond $Y$, $Y_1 \subseteq Y \subseteq E(G)$, $\lvert Y \rvert \leq m$, some subset of $Y$ is among the generated $(j+1)$-bonds
@@ -259,7 +273,7 @@ To modify the original algorithm to fit into the scheme for generating $k$-bonds
 		\qquad \enspace $T_b \subseteq (G_1 \sm V(T_r)) \sm X$ such that $V_b \subsetneq V(T_b)$}
 		\State \textbf{return;}
 	\EndIf
-	\State $P \leftarrow$ a (short) $V(T_r){-}V_b$ path $P \subseteq G_1$
+	\State $P \leftarrow$ a $V(T_r){-}V_b$ path $P \subseteq G_1$
 
 	\If{such $P$ does not exist}
 		\State \textbf{return} $Y \cup X$ \Comment{$Y \cup X$ is a $j+1$-bond}
@@ -277,29 +291,29 @@ To modify the original algorithm to fit into the scheme for generating $k$-bonds
 
 \clearpage
 
-TODO: Fix this theorem and its proof.
-
 \begin{thm}
-	Let $G$ be a graph, $j,k,m$ natural numbers such that $j < k, m \geq 1$ and $Y_1 \subseteq E(G)$ a $j$-bond in $G$. Algorithm \ref{algorithm-one_stage} generates a set $\mathcal{S}$ of $(j+1)$-bonds such that for each $k$-bond $Y$, $Y_1 \subseteq Y \subseteq E(G)$, $\lvert Y \rvert \leq m$, some subset of $Y$ is among the generated $(j+1)$-bonds in $\mathcal{S}$.
+	Let $G$ be a graph, $j,k,m$ natural numbers such that $j < k, m \geq 1$ and $Y_1 \subseteq E(G)$ a $j$-bond in $G$. Algorithm \ref{alg:one-stage} generates a set $\mathcal{S}$ of $(j+1)$-bonds such that for each $k$-bond $Y$, $Y_1 \subseteq Y \subseteq E(G)$, $\lvert Y \rvert \leq m$, some subset of $Y$ is among the generated $(j+1)$-bonds in $\mathcal{S}$.
 \end{thm}
 
 \begin{proof}
-	It follows from Lemma \ref{stepwise_is_welldefined}, that for the given $Y_1$ and each $k$-bond $Y$ such that $Y_1 \subseteq Y$, there is $Y_2 \in \mathcal{S}$ such that $Y_1 \subsetneq Y_2 \subseteq Y$. We have to show that the algorithm generates this $Y_2$.
+	We only prove correctness of specific choices made by Algorithm \ref{alg:one-stage} since it is a special case of Algorithm \ref{alg:meta} proven correct by Theorem \ref{meta_alg_correctness}.
 
-	If $j = 1$, the first edge $c_1 = c_{s(1)+1} \in Y_2 \setminus Y_1$ has to be chosen from a $k$-way basis and the algorithm does this by line 2. If $j > 1$, by Lemma \ref{lem:kway_circuit_types}.a, the edge $c_{s(j)+1} \in Y_2 \setminus Y_1$ has to be chosen from a \break type-F circuit -- the algorithm does this choice on line 4.
+	It follows from Lemma \ref{lem:stepwise_is_welldefined}, that for the given $Y_1$ and each $k$-bond $Y$ such that $Y_1 \subseteq Y$, there is a $(j+1)$-bond $Y_2$ such that $Y_1 \subsetneq Y_2 \subseteq Y$. % We have to show that the algorithm returns this $Y_2 \in \mathcal{S}$.
+	To prove that the algorithm returns this $Y_2 \in \mathcal{S}$, it suffices to prove the correcntess of the choice of the first edge.
 
- For both $j = 1$ and $j > 1$, when choosing the remaining edges of $Y_2 \setminus Y_1$ in the steps $s(j) + 1, \ldots, s(j+1)-1$, the algorithm selects them from a type-C circuit, which is possible by Lemma \ref{lem:kway_circuit_types}.b.
+	If $j = 1$, the first edge $c_1 = c_{s(1)+1} \in Y_2 \setminus Y_1$ has to be chosen from a $k$-way basis and the algorithm does this on line 2. If $j > 1$, by Lemma \ref{lem:kway_circuit_types}.a, the edge $c_{s(j)+1} \in Y_2 \setminus Y_1$ has to be chosen from a type-F circuit -- the algorithm does this choice on line 4.
 
-%	Next we have to show that each edge is considered into X. Suppose the algorithm does not call \textsc{GenCocircuits}$(X \cup \{e\})$ for some edge $e \in Y$. This means that the choice of $C$ containing this $e$ was not made, contradicting the convergence of the algorithm.
+% For both $j = 1$ and $j > 1$, when choosing the remaining edges of $Y_2 \setminus Y_1$ in the steps $s(j) + 1, \ldots, s(j+1)-1$, the algorithm selects them from a type-C circuit, which is possible by Lemma \ref{lem:kway_circuit_types}.b.
 
- It remains to show that all $Y_2 \in \mathcal{S}$ such that $Y_1 \subsetneq Y_2 \subseteq Y$ with a certain $X_1 \subseteq Y_2 \setminus Y_1$ satisfy the size bound $\lvert Y_1 \cup X_1 \rvert \leq m - k + j + 1$. Suppose $\lvert Y_1 \cup X_1 \rvert > m - k + j + 1$. Thus in the next $k - j - 1$ stages the algorithm has to select less than $k - j - 1$ edges in the remaining steps to satisfy $\lvert Y \rvert \leq m$, contradicting our assumption that $Y$ is a $k$-bond.
+
+ % It remains to show that all $Y_2 \in \mathcal{S}$ such that $Y_1 \subsetneq Y_2 \subseteq Y$ with a certain $X_1 \subseteq Y_2 \setminus Y_1$ satisfy the size bound $\lvert Y_1 \cup X_1 \rvert \leq m - k + j + 1$. Suppose $\lvert Y_1 \cup X_1 \rvert > m - k + j + 1$. Thus in the next $k - j - 1$ stages the algorithm has to select less than $k - j - 1$ edges in the remaining steps to satisfy $\lvert Y \rvert \leq m$, contradicting our assumption that $Y$ is a $k$-bond.
 \end{proof}
 
 
 \chapter{Canonical generation}
 \label{ch:canonical}
 
-Algorithm \ref{algorithm-one_stage} generates many permutations of the same set. This becomes a problem especially when computing $k$-bonds for $k \geq 2$ because the algorithm is then called for each of the different permutations and generates the same $k$-bond more than once.
+Algorithm \ref{alg:one-stage} generates many permutations of the same set. This becomes a problem especially when computing $k$-bonds for $k \geq 2$ because the algorithm is then called for each of the different permutations and generates the same $k$-bond more than once.
 
 To reduce multiple generation of $k$-bonds we implement a technique of \textit{canonical generation}. McKay in \cite{mckay_isom} both presents an overview of various approaches to canonical generation and describes in detail the technique of \textit{generation by canonical construction path} which is the basis for our approach. We start by outlining the general idea.
 
@@ -321,11 +335,9 @@ The definition of $\mcan()$ has to be compatible with the original generating ro
 
 \section{Canonical generation of $k$-bonds}
 
-We apply the idea of generation by canonical construction path to Algorithm \ref{algorithm-one_stage}. Before continuing we suggest to recall the Definition \ref{defn:stepwise_partition}.
+We apply the idea of generation by canonical construction path to Algorithm \ref{alg:one-stage}. Before continuing we suggest to recall the Definition \ref{defn:stepwise_partition}.
 
-Let $G$ be a connected graph and $X \subseteq E(G)$ a $k$-bond. For each \break $j \in \{1, \ldots, k\}$, denote by $G^j$ the set $G \setminus \{c_{1}, \ldots, c_{s(j)}\}$, and by $G^j_0$ the connected component of $G^j$ such that $Z^j \subseteq E(G^j_0)$.
-
-TODO: Recall $Z^j$?
+Let $G$ be a connected graph and $X \subseteq E(G)$ a $k$-bond. For each \break $j \in \{1, \ldots, k\}$, denote by $Z^j$ the set $\{c_{s(j)+1}, c_{s(j)+2}, \ldots, c_{s(j+1)}\}$, denote by $G^j$ the set $G \setminus \{c_{1}, \ldots, c_{s(j)}\}$ and by $G^j_0$ the connected component of $G^j$ such that $Z^j \subseteq E(G^j_0)$.
 
 \begin{defn}[Canonical form of a stepwise partition]
 	\label{can}
@@ -361,10 +373,6 @@ The first point of the above definition uses Lemma \ref{stepwise_2bond}.
 \noindent
 To shorten our notation we introduce $\mu$ and $\tau$ as follows.
 
-%%
-% I also liked the definition of \tau using c_{s(j)+1}, where j is the largest index added to X.
-%%
-
 \begin{defn}
 	Let $\iota$ be an arbitrary bijection (confer Definition \ref{can}), $Z$ be a $k$-bond with stepwise partition $(Z^1,\ldots,Z^{k-1})$, $s$ be a mapping as in Definition \ref{defn:stepwise_scheme} and $1 \leq j \leq k - 1$.
 
@@ -375,18 +383,15 @@ To shorten our notation we introduce $\mu$ and $\tau$ as follows.
 \medskip
 
 \noindent
-Now let $Y$ be a prefix of $X$ with partition $(Z^1,\ldots, Z^h)$, $h < k$.
-
+Let $Y$ be a prefix of $Z$ and $h$ the largest index such that $c_{s(h)+1}$ belongs to $Y$.
 	\[
 		\tau(Y) \stackrel{\text{def}}{=}
 		\begin{cases}
 			\hfill -\infty    		 \hfill & \text{if $Y = \varnothing$} \\
-			\hfill \mu(Z^h) \hfill & \text{otherwise} \\
+			\hfill c_{s(h)+1} \hfill & \text{otherwise} \\
 		\end{cases}
 	\]
-
 \end{defn}
-
 
 \begin{defn}[Canonical form of a bond]
 	\label{defn:can_bond}
@@ -397,7 +402,7 @@ Now let $Y$ be a prefix of $X$ with partition $(Z^1,\ldots, Z^h)$, $h < k$.
 
 \begin{lem}
 	\label{lem:every_kbond_has_can}
-	For every $k$-bond $X$ there exists a canonical form of $X$.
+	For every $k$-bond $X$ there exists a canonical form $\vec{X}$ of $X$.
 \end{lem}
 
 \begin{proof}
@@ -411,7 +416,7 @@ Now let $Y$ be a prefix of $X$ with partition $(Z^1,\ldots, Z^h)$, $h < k$.
 
 This contradicts the assumption that $F$ is a minimum basis.
 
-	By lemmas \ref{circuit_types} and \ref{stepwise_is_welldefined} the rest of the edges of this first stage can be selected as a type-C circuit. For each edge the algorithm selects the unique path (satisfying Definition \ref{can}) which is contained in an implicit type-C circuit (confer Corollary \ref{cor_circuit_subset}). This finishes the first stage.
+	By Claim \ref{claim:circuit_types} and Lemma \ref{lem:stepwise_is_welldefined} the rest of the edges of this first stage can be selected as a type-C circuit. For each edge the algorithm selects the unique path (satisfying Definition \ref{can}) which is contained in an implicit type-C circuit (confer Corollary \ref{cor_circuit_subset}). This finishes the first stage.
 
 	For the induction step consider the $j$-th stage and a $j$-bond $Y \subseteq \vec X$. We want to show that the edge $c_{s(j)+1} \in \vec X$ lies in the $\iota$-minimum type-F circuit, that is a $\iota$-minimum spanning forest $F$ on $k-2$ trees. Since $\lvert F \cap Y \rvert = 1$, it suffices to show that the edge $c_{s(j)+1}$ lies on a $\iota$-minimum spanning forest $S = F \sm Y$ on $k-1$ trees (again a $k$-way basis) such that and $Y \cap S = \varnothing$. To prove this we provide a very similar argument as in the base case:
 
@@ -432,7 +437,7 @@ This contradicts the assumption that $F$ is a minimum basis.
 \vspace{-0.5cm}
 \end{exmp*}
 
-\subsection*{Achieving the canonical generation within Algorithm \ref{algorithm-one_stage}}
+\subsection*{Achieving the canonical generation within Algorithm \ref{alg:one-stage}}
 
 \begin{itemize}
 	\item At the beginning of each stage the edge $c$ which is being added to $X$ has to satisfy $\iota(c) > \tau(Y)$. Note that as a result the spanning forest $F$ has to be recomputed at the beginning of each stage
@@ -452,7 +457,7 @@ This contradicts the assumption that $F$ is a minimum basis.
 	\label{algorithm-can_one_step}
 \begin{algorithmic}[1]
 	\Require A connected graph $G$, parameters $j,\, k,\, m \in \mathbb{N},\, j < k,\, m \geq 1$ and a~$j$-bond $Y_1 \subseteq E(G)$
-	\Ensure A collection of $(j+1)$-bonds as in Algorithm \ref{algorithm-one_stage}), such that each one is in the unique canonical form extending $Y_1$
+	\Ensure A collection of $(j+1)$-bonds as in Algorithm \ref{alg:one-stage}), such that each one is in the unique canonical form extending $Y_1$
 
 	\If{$j=1$}
 		\State $F \leftarrow$ a $\iota$-minimum spanning forest of $k-1$ trees
@@ -498,7 +503,7 @@ This contradicts the assumption that $F$ is a minimum basis.
 
 \begin{lem}
 	\label{lem:alg_is_canonical}
-	Let $G$ be a connected graph. If an implementation of Algorithm \ref{algorithm-one_stage} satisfies the conditions of Definition \ref{can}, namely
+	Let $G$ be a connected graph. If an implementation of Algorithm \ref{alg:one-stage} satisfies the conditions of Definition \ref{can}, namely
 
 	\begin{itemize}
 		\item the spanning forest selected at the beginning of each stage (in \textsc{ExtendBond}) is chosen such that it is the unique minimal one with respect to edge weights $\iota$
@@ -532,7 +537,7 @@ The corollary below allows the implementation to slightly differ from the defini
 	Algorithm \ref{algorithm-can_one_step} can be modified to always choose the unique shortest path to be a $V(T_r){-}V_b$ path.
 \end{cor}
 
-TODO: explanation
+This unique shortest path can omit the edges of $T_r$ since they were already in $X$ in a different branch of computation.
 
 \begin{claim}
 	\label{forest_sel_claim}

@@ -43,8 +43,11 @@ The second point in the above definition is called \textit{the basis exchange ax
 Subsets of matroid bases are called \textit{independent sets}, and the remaining sets are \textit{dependent}. Minimal sets not contained in a~basis are called \textit{circuits}, maximal sets not containing any basis are called \textit{hyperplanes}.
 
 \begin{exmp*}
-TODO
-%	Let $A$ be a matrix, $\mathcal{V} = V_1,\ldots,V_n$ be the column vectors of $A$ and let $\mathcal{I}$ be the collection of subsets of $\mathcal{V}$ such that each $I \in \mathcal{I}$ is linearly independent over $\mathbb{R}$. Then it can be seen that $M = (\mathcal{V}, \mathcal{I})$ is a~matroid.
+	Let $A$ be a matrix, $\mathcal{V} = V_1,\ldots,V_n$ be the column vectors of $A$ and let $\mathcal{I}$ be the collection of subsets of $\mathcal{V}$ such that each $I \in \mathcal{I}$ is linearly independent over $\mathbb{R}$. $M = (\mathcal{V}, \mathcal{I})$ is a~matroid. The subsets of bases of $M$ are independent (expecially from the point of view of linear algebra), and the remaining sets are indeed dependent (as some vector in a dependent set can be given as a linear combination of other vectors from the set). The maximal sets not containing any basis are indeed hyperplanes.
+\end{exmp*}
+
+\begin{exmp*}
+Let $G = (V, E)$ be a graph and let $\mathcal{I}$ be a collection of subsets of $E$, such that each $I \in \mathcal{I}$ induces a~spanning tree in $G$. $M = (E, \mathcal{I})$ is a~matroid. The subsets of bases of $M$ are trees in $G$, the dependent sets contain a~cycle. The minimal sets not contained in a basis are the cycles of $G$ and the hyperplanes of $M$ are exactly the complements of minimal cuts in $G$.
 \end{exmp*}
 
 \begin{defn}[Dual matroid]
